@@ -37,8 +37,8 @@ ORDER BY discount_amount DESC;
 
 -- ***********************************************************************
 SELECT product_name, product_id 
-FROM products p
-WHERE NOT EXISTS ( SELECT * FROM order_items oi WHERE oi.product_id = p.product_id );
+FROM products as p
+WHERE NOT EXISTS ( SELECT product_id FROM order_items WHERE product_id = p.product_id );
 -- *******************************Problem 4****************************
 -- * Write a SQL statement that finds orders with unique card_types. 
 -- * In other words, don’t include orders that have the same card_type as another order. 
@@ -50,17 +50,17 @@ WHERE NOT EXISTS ( SELECT * FROM order_items oi WHERE oi.product_id = p.product_
 -- **********************************************************************
 SELECT order_id, card_type
 FROM orders
-WHERE card_type NOT IN ( SELECT card_type from orders GROUP BY card_type HAVING COUNT(*) > 1)
+WHERE card_type NOT IN ( SELECT card_type FROM orders GROUP BY card_type HAVING COUNT(*) > 1)
 ORDER BY card_type;
 -- ***************************Problem 5******************************
 -- * Write a SQL statement that uses correlated subquery to return one row per category, 
 -- * representing the categories cheapest product (smallest list price). 
 -- * Each row should include these three columns: product_name, category_name and list_price.
 -- ****************************************************************
-SELECT p.product_name, c.category_name, p.list_price 
-FROM products p 
+SELECT product_name, category_name, list_price 
+FROM products p
 JOIN categories c ON p.category_id = c.category_id
-WHERE p.list_price = ( SELECT MIN(list_price) FROM products p2 WHERE p2.category_id = p.category_id );
+WHERE list_price = ( SELECT MIN(list_price) FROM products WHERE category_id = c.category_id );
 -- ********************Problem 6*****************************
 -- * Create a query that will NOT use JOINS but only use a subquery.
 -- * The Query should return Average_List_Price of products in the Category Name.
